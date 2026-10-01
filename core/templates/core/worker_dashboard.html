@@ -1,0 +1,39 @@
+{% extends "core/base.html" %}
+{% block title %}My Tasks{% endblock %}
+{% block content %}
+<h1>My Tasks</h1>
+<p class="subtitle">View and update the status of tasks assigned to you</p>
+
+<div class="filters">
+  <a href="?tab=active" class="{% if tab == 'active' %}active{% endif %}">Active ({{ active_count }})</a>
+  <a href="?tab=completed" class="{% if tab == 'completed' %}active{% endif %}">Completed ({{ completed_count }})</a>
+</div>
+
+{% if tasks %}
+<div class="task-grid">
+  {% for t in tasks %}
+  <div class="card">
+    <div class="task-card-header">
+      <strong>{{ t.title }}</strong>
+      <span class="badge badge-{{ t.status|lower }}">{{ t.get_status_display }}</span>
+    </div>
+    <p class="muted">{{ t.description }}</p>
+    <div class="task-meta">
+      <span class="badge badge-{{ t.priority|lower }}">{{ t.get_priority_display }}</span>
+      <span>Due {{ t.deadline }}</span>
+    </div>
+    {% if t.status != "COMPLETED" %}
+    <form method="post" action="{% url 'task_advance_status' t.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary btn-block">
+        {% if t.status == "PENDING" %}Start Task{% else %}Mark Completed{% endif %}
+      </button>
+    </form>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card"><p class="muted">No {{ tab }} tasks.</p></div>
+{% endif %}
+{% endblock %}

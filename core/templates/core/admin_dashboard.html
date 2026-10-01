@@ -1,0 +1,38 @@
+{% extends "core/base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+<p class="subtitle">Overview of your workforce and tasks</p>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="label">Total Workers</div><div class="value">{{ total_workers }}</div></div>
+  <div class="stat-card"><div class="label">Pending</div><div class="value">{{ pending }}</div></div>
+  <div class="stat-card"><div class="label">In Progress</div><div class="value">{{ in_progress }}</div></div>
+  <div class="stat-card"><div class="label">Completed</div><div class="value">{{ completed }}</div></div>
+</div>
+
+<div class="card">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+    <strong>Recent Tasks</strong>
+    <a href="{% url 'task_list' %}">View all</a>
+  </div>
+  {% if recent_tasks %}
+  <table>
+    <thead><tr><th>Title</th><th>Assigned To</th><th>Priority</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for t in recent_tasks %}
+      <tr>
+        <td>{{ t.title }}</td>
+        <td>{{ t.assigned_to.get_full_name|default:t.assigned_to.username }}</td>
+        <td><span class="badge badge-{{ t.priority|lower }}">{{ t.get_priority_display }}</span></td>
+        <td><span class="badge badge-{{ t.status|lower }}">{{ t.get_status_display }}</span></td>
+      </tr>
+      {% endfor %}
+    
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No tasks created yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

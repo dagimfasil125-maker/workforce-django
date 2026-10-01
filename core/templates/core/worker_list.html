@@ -1,0 +1,45 @@
+{% extends "core/base.html" %}
+{% block title %}Workers{% endblock %}
+{% block content %}
+<h1>Workers</h1>
+<p class="subtitle">Add and manage your workforce</p>
+
+<div class="card">
+  <strong>Add a new worker</strong>
+  <form method="post" style="margin-top:10px;">
+    {% csrf_token %}
+    {% for field in form %}
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.errors %}<ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+    {% endfor %}
+    <button type="submit" class="btn btn-primary" style="margin-top:16px;">Add Worker</button>
+  </form>
+</div>
+
+<div class="card">
+  {% if workers %}
+  <table>
+    <thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Tasks</th><th></th></tr></thead>
+    <tbody>
+      {% for w in workers %}
+      <tr>
+        <td>{{ w.get_full_name|default:"-" }}</td>
+        <td>{{ w.username }}</td>
+        <td>{{ w.email }}</td>
+        <td>{{ w.tasks.count }}</td>
+        <td>
+          <form method="post" action="{% url 'worker_delete' w.pk %}" onsubmit="return confirm('Remove this worker and all their tasks?');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Remove</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No workers added yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
